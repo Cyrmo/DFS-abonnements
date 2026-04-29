@@ -22,7 +22,7 @@
 
         {# Grille native des commandes (filtrée sur les états Abonnement / Abonnement terminé) #}
         {% if orderGrid %}
-            {{ renderGrid(orderGrid) }}
+            {% include '@PrestaShop/Admin/Common/Grid/grid_panel.html.twig' with {'grid': orderGrid} %}
         {% else %}
             <div class="alert alert-warning">Impossible d'afficher la grille des commandes. Vérifiez que le module est bien installé.</div>
         {% endif %}
