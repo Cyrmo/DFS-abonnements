@@ -5,6 +5,8 @@ services:
         public: true
 
     DfsAbonnements\Controller\Admin\AdminDfsAbonnementsController:
+        arguments:
+            $orderGridFactory: '@prestashop.core.grid.factory.order'
         tags:
             - { name: controller.service_arguments }
 

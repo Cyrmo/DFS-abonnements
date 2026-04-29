@@ -30,7 +30,7 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
     }
 
     #[AdminSecurity("is_granted('read', request.get('_legacy_controller'))")]
-    public function indexAction(Request $request, OrderFilters $filters): Response
+    public function indexAction(Request $request): Response
     {
         /** @var Dfs_Abonnements|null $module */
         $module = \Module::getInstanceByName('dfs_abonnements');
@@ -67,14 +67,20 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
             }
         }
 
-        // Construction de la grille native.
-        // Les $filters sont remplis par PS9 via le FiltersBuilderValueResolver (comme AdminOrdersController).
-        // Le hook hookActionOrderGridQueryBuilderModifier du module ajoute automatiquement
-        // la clause WHERE current_state IN (X, Y) — uniquement sur cette route.
-        $orderGrid = $this->orderGridFactory->getGrid($filters);
+        // Construction de la grille native de manière totalement sécurisée.
+        // On instancie manuellement les filtres pour éviter tout crash du routeur si le resolver PS9 échoue.
+        $orderGrid = null;
+        try {
+            $filters   = new OrderFilters(['filters' => []], $request);
+            $orderGrid = $this->orderGridFactory->getGrid($filters);
+            $presentedGrid = $this->presentGrid($orderGrid);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors du chargement de la grille : ' . $e->getMessage());
+            $presentedGrid = null;
+        }
 
         return $this->render('@Modules/dfs_abonnements/views/templates/admin/abonnements.html.twig', [
-            'orderGrid'        => $this->presentGrid($orderGrid),
+            'orderGrid'        => $presentedGrid,
             'abonnementOrders' => $module->getAbonnementOrders(),
             'statusIds'        => $statusIds,
             'logs'             => $module->getLogs(30),
