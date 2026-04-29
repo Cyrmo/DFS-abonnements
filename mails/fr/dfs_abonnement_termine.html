@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Votre abonnement est terminé</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px;">
+<table width="600" cellpadding="0" cellspacing="0" style="margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <tr>
+        <td style="background: #4a1942; padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Maison Lorho</h1>
+            <p style="color: #e8c4e0; margin: 8px 0 0;">Fromagerie artisanale</p>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 40px 30px;">
+            <p style="font-size: 16px; color: #333;">Bonjour <strong>{firstname} {lastname}</strong>,</p>
+            <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                Votre abonnement <strong>{abonnement_name}</strong>
+                (commande n° <strong>{order_reference}</strong>) est arrivé à son terme.
+            </p>
+            <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                Nous espérons que cette sélection de fromages vous a plu et qu'elle vous a fait découvrir
+                de belles saveurs. Ce fut un plaisir de vous accompagner dans cette aventure fromagère.
+            </p>
+            <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                Vous pouvez bien sûr renouveler l'expérience à tout moment depuis notre boutique.
+                Nous serions ravis de vous retrouver !
+            </p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{shop_url}" style="background: #4a1942; color: #fff; padding: 14px 28px;
+                   text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                    Renouveler mon abonnement
+                </a>
+            </div>
+            <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                Merci pour votre confiance.<br>
+                L'équipe Maison Lorho
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td style="background: #f0e8ef; padding: 20px; text-align: center;">
+            <p style="font-size: 12px; color: #888; margin: 0;">
+                {shop_name} — <a href="{shop_url}" style="color: #4a1942;">{shop_url}</a>
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

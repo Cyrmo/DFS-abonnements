@@ -1,0 +1,13 @@
+Bonjour {firstname} {lastname},
+
+Bonne nouvelle ! Votre abonnement {abonnement_name} (commande n° {order_reference}) est prêt.
+
+Votre sélection de fromages est disponible. Vous pouvez venir la récupérer en boutique ou elle vous sera prochainement expédiée selon votre mode de livraison.
+
+Visiter notre boutique : {shop_url}
+
+Merci pour votre confiance.
+L'équipe Maison Lorho
+
+--
+{shop_name} — {shop_url}

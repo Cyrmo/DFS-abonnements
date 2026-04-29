@@ -1,0 +1,9 @@
+dfs_abonnements_index:
+    path: /sell/orders/abonnements
+    controller: DfsAbonnements\Controller\Admin\AdminDfsAbonnementsController::indexAction
+    methods: [GET, POST]
+
+dfs_abonnements_config:
+    path: /sell/orders/abonnements/config
+    controller: DfsAbonnements\Controller\Admin\AdminDfsAbonnementsConfigController::indexAction
+    methods: [GET, POST]

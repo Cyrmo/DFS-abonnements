@@ -1,0 +1,13 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    DfsAbonnements\Controller\Admin\AdminDfsAbonnementsController:
+        tags:
+            - { name: controller.service_arguments }
+
+    DfsAbonnements\Controller\Admin\AdminDfsAbonnementsConfigController:
+        tags:
+            - { name: controller.service_arguments }

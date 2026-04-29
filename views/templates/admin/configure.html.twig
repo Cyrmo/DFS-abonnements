@@ -1,0 +1,110 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-header-title">
+            <i class="material-icons">settings</i>
+            DFS Abonnements — Configuration
+        </h3>
+    </div>
+    <div class="card-body">
+
+        {# Messages #}
+        {% for msg in confirmations %}
+            <div class="alert alert-success">{{ msg }}</div>
+        {% endfor %}
+        {% for err in errors %}
+            <div class="alert alert-danger">{{ err }}</div>
+        {% endfor %}
+
+        {# Info statuts créés #}
+        <div class="alert alert-info">
+            <strong>États de commande créés par le module :</strong><br>
+            • ID <strong>{{ config.status_abonnement }}</strong> → Abonnement<br>
+            • ID <strong>{{ config.status_termine }}</strong> → Abonnement terminé
+        </div>
+
+        <form method="post" action="">
+            <input type="hidden" name="submitDfsAbonnementsConfig" value="1">
+
+            <h4 class="mt-4">Produits d'abonnement</h4>
+            <p class="text-muted">Renseignez l'ID PrestaShop de chaque produit d'abonnement.</p>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">ID produit — 1 mois</label>
+                    <input type="number" name="prod_1m" class="form-control"
+                           value="{{ config.prod_1m }}" min="1" required>
+                    <small class="text-muted">Aucun code promo associé.</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">ID produit — 3 mois</label>
+                    <input type="number" name="prod_3m" class="form-control"
+                           value="{{ config.prod_3m }}" min="1" required>
+                    <small class="text-muted">Aucun code promo associé.</small>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">ID produit — 6 mois</label>
+                    <input type="number" name="prod_6m" class="form-control"
+                           value="{{ config.prod_6m }}" min="1" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Montant du code promo — 6 mois (€)</label>
+                    <div class="input-group">
+                        <input type="number" name="promo_6m" class="form-control"
+                               value="{{ config.promo_6m }}" min="0" step="0.01" required>
+                        <span class="input-group-text">€</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">ID produit — 12 mois</label>
+                    <input type="number" name="prod_12m" class="form-control"
+                           value="{{ config.prod_12m }}" min="1" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Montant du code promo — 12 mois (€)</label>
+                    <div class="input-group">
+                        <input type="number" name="promo_12m" class="form-control"
+                               value="{{ config.promo_12m }}" min="0" step="0.01" required>
+                        <span class="input-group-text">€</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Durée de validité des codes promo (mois)</label>
+                    <input type="number" name="promo_validity" class="form-control"
+                           value="{{ config.promo_validity }}" min="1" max="120" required>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="material-icons">save</i> Sauvegarder
+                </button>
+            </div>
+        </form>
+
+        {# Journal #}
+        {% if logs|length > 0 %}
+        <hr class="mt-5">
+        <h4>Journal des 20 dernières actions</h4>
+        <table class="table table-striped table-sm">
+            <thead class="table-dark">
+                <tr><th>Date</th><th>Commande</th><th>Action</th><th>Détail</th></tr>
+            </thead>
+            <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td><small>{{ log.date_add }}</small></td>
+                    <td>{{ log.reference ?? '#' ~ log.id_order }}</td>
+                    <td><code>{{ log.action }}</code></td>
+                    <td><small class="text-muted">{{ log.detail }}</small></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Votre code promo abonnement</title>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px;">
+<table width="600" cellpadding="0" cellspacing="0" style="margin: 0 auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <tr>
+        <td style="background: #4a1942; padding: 30px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Maison Lorho</h1>
+            <p style="color: #e8c4e0; margin: 8px 0 0;">Fromagerie artisanale</p>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 40px 30px;">
+            <p style="font-size: 16px; color: #333;">Bonjour <strong>{firstname} {lastname}</strong>,</p>
+            <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                Merci pour votre abonnement <strong>{abonnement_name}</strong>
+                (commande n° <strong>{order_reference}</strong>).
+            </p>
+            <p style="font-size: 16px; color: #333; line-height: 1.6;">
+                En remerciement de votre fidélité, nous avons le plaisir de vous offrir un
+                <strong>bon de réduction de {voucher_amount}</strong> valable sur votre prochaine commande.
+            </p>
+
+            {# Code promo mis en évidence #}
+            <div style="background: #f0e8ef; border: 2px dashed #4a1942; border-radius: 8px;
+                        padding: 20px; text-align: center; margin: 24px 0;">
+                <p style="margin: 0 0 8px; font-size: 14px; color: #666;">Votre code promo :</p>
+                <p style="margin: 0; font-size: 28px; font-weight: bold; color: #4a1942;
+                           letter-spacing: 3px;">{voucher_code}</p>
+                <p style="margin: 8px 0 0; font-size: 13px; color: #888;">
+                    Valable jusqu'au <strong>{voucher_expiry}</strong> — usage unique
+                </p>
+            </div>
+
+            <p style="font-size: 14px; color: #555; line-height: 1.6;">
+                Ce code est nominatif et utilisable une seule fois. Il sera automatiquement appliqué
+                lors de votre prochain passage en caisse sur notre boutique en ligne.
+            </p>
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{shop_url}" style="background: #4a1942; color: #fff; padding: 14px 28px;
+                   text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                    Utiliser mon code promo
+                </a>
+            </div>
+            <p style="font-size: 14px; color: #666; line-height: 1.6;">
+                Merci pour votre confiance.<br>
+                L'équipe Maison Lorho
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td style="background: #f0e8ef; padding: 20px; text-align: center;">
+            <p style="font-size: 12px; color: #888; margin: 0;">
+                {shop_name} — <a href="{shop_url}" style="color: #4a1942;">{shop_url}</a>
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

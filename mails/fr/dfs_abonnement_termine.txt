@@ -1,0 +1,15 @@
+Bonjour {firstname} {lastname},
+
+Votre abonnement {abonnement_name} (commande n° {order_reference}) est arrivé à son terme.
+
+Nous espérons que cette sélection de fromages vous a plu et qu'elle vous a fait découvrir de belles saveurs. Ce fut un plaisir de vous accompagner dans cette aventure fromagère.
+
+Vous pouvez bien sûr renouveler l'expérience à tout moment depuis notre boutique.
+
+Renouveler mon abonnement : {shop_url}
+
+Merci pour votre confiance.
+L'équipe Maison Lorho
+
+--
+{shop_name} — {shop_url}

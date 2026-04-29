@@ -1,0 +1,172 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-header-title">
+            <i class="material-icons">subscriptions</i>
+            Commandes Abonnements
+        </h3>
+    </div>
+    <div class="card-body">
+
+        {# Messages flash #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Grille native des commandes (filtrée sur les états Abonnement / Abonnement terminé) #}
+        {% if orderGrid %}
+            {{ renderGrid(orderGrid) }}
+        {% else %}
+            <div class="alert alert-warning">Impossible d'afficher la grille des commandes. Vérifiez que le module est bien installé.</div>
+        {% endif %}
+
+    </div>
+</div>
+
+{# ============================================================ #}
+{# BLOC MARKETING ABONNEMENTS #}
+{# ============================================================ #}
+<div class="card mt-3">
+    <div class="card-header">
+        <h3 class="card-header-title">
+            <i class="material-icons">campaign</i>
+            Marketing abonnements
+        </h3>
+    </div>
+    <div class="card-body">
+
+        {# -------------------------------------------------- #}
+        {# Section 1 : Mail "Abonnement prêt" (envoi groupé) #}
+        {# -------------------------------------------------- #}
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <h4>📬 Envoyer le mail « Votre abonnement est prêt »</h4>
+                <p class="text-muted">
+                    Ce mail est envoyé manuellement à tous les clients dont la commande est actuellement
+                    en état <strong>Abonnement</strong>.
+                    Les commandes ayant déjà reçu ce mail sont automatiquement ignorées.
+                </p>
+
+                {# Statistiques #}
+                {% set abonnementCount = abonnementOrders|length %}
+                {% set uniqueEmails = abonnementOrders|map(o => o.email)|unique|length %}
+
+                <div class="d-flex gap-4 mb-3">
+                    <div class="card border-primary text-center p-3" style="min-width: 130px;">
+                        <div class="h2 text-primary mb-0">{{ abonnementCount }}</div>
+                        <small class="text-muted">commande(s) en état Abonnement</small>
+                    </div>
+                    <div class="card border-info text-center p-3" style="min-width: 130px;">
+                        <div class="h2 text-info mb-0">{{ uniqueEmails }}</div>
+                        <small class="text-muted">client(s) destinataire(s)</small>
+                    </div>
+                </div>
+
+                {% if abonnementCount > 0 %}
+                    <form method="post" action=""
+                          onsubmit="return confirm('Confirmer l\'envoi du mail « Abonnement prêt » à {{ uniqueEmails }} client(s) ?\n\nLes commandes ayant déjà reçu ce mail seront ignorées.')">
+                        <input type="hidden" name="send_pret_mail" value="1">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons">send</i>
+                            Envoyer le mail « Abonnement prêt » ({{ uniqueEmails }} destinataire(s))
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-info">Aucune commande actuellement en état « Abonnement ».</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+
+        {# -------------------------------------------------- #}
+        {# Section 2 : Renvoi manuel "Abonnement terminé" #}
+        {# -------------------------------------------------- #}
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <h4>🔁 Renvoyer le mail « Votre abonnement est terminé »</h4>
+                <p class="text-muted">
+                    En temps normal, ce mail est envoyé <strong>automatiquement</strong> lors du passage
+                    à l'état « Abonnement terminé ».
+                    Utilisez ce formulaire uniquement pour un renvoi manuel exceptionnel.
+                </p>
+                <form method="post" action=""
+                      onsubmit="return confirm('Confirmer le renvoi du mail « Abonnement terminé » pour cette commande ?')">
+                    <input type="hidden" name="resend_termine_mail" value="1">
+                    <div class="input-group" style="max-width: 360px;">
+                        <span class="input-group-text">N° de commande</span>
+                        <input type="number" name="resend_order_id" class="form-control"
+                               placeholder="ID (ex: 42)" min="1" required>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="material-icons">replay</i> Renvoyer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <hr>
+
+        {# -------------------------------------------------- #}
+        {# Journal des actions #}
+        {# -------------------------------------------------- #}
+        <div class="row">
+            <div class="col-12">
+                <h4>📋 Journal des actions récentes</h4>
+                {% if logs|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Commande</th>
+                                <th>Action</th>
+                                <th>Détail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td><small>{{ log.date_add }}</small></td>
+                                <td>
+                                    {% if log.reference %}
+                                        <strong>{{ log.reference }}</strong>
+                                    {% else %}
+                                        #{{ log.id_order }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set badges = {
+                                        'promo_generated':    ['success', '🎟️ Code promo généré'],
+                                        'promo_email_sent':   ['info',    '📧 Mail promo envoyé'],
+                                        'pret_email_sent':    ['primary', '📬 Mail prêt envoyé'],
+                                        'termine_email_sent': ['secondary','📩 Mail terminé envoyé'],
+                                    } %}
+                                    {% if log.action in badges|keys %}
+                                        <span class="badge bg-{{ badges[log.action][0] }}">{{ badges[log.action][1] }}</span>
+                                    {% else %}
+                                        {{ log.action }}
+                                    {% endif %}
+                                </td>
+                                <td><small class="text-muted">{{ log.detail }}</small></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <p class="text-muted">Aucune action enregistrée pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>{# /.card-body #}
+</div>{# /.card #}
+{% endblock %}

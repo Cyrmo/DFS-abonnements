@@ -1,0 +1,18 @@
+Bonjour {firstname} {lastname},
+
+Merci pour votre abonnement {abonnement_name} (commande n° {order_reference}).
+
+En remerciement de votre fidélité, nous avons le plaisir de vous offrir un bon de réduction de {voucher_amount} valable sur votre prochaine commande.
+
+Votre code promo : {voucher_code}
+Valable jusqu'au : {voucher_expiry} — usage unique
+
+Ce code est nominatif et utilisable une seule fois sur notre boutique en ligne.
+
+Commander avec mon code : {shop_url}
+
+Merci pour votre confiance.
+L'équipe Maison Lorho
+
+--
+{shop_name} — {shop_url}
