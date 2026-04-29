@@ -2,8 +2,14 @@ dfs_abonnements_index:
     path: /sell/orders/abonnements
     controller: DfsAbonnements\Controller\Admin\AdminDfsAbonnementsController::indexAction
     methods: [GET, POST]
+    defaults:
+        _legacy_controller: AdminDfsAbonnements
+        _legacy_link: AdminDfsAbonnements
 
 dfs_abonnements_config:
     path: /sell/orders/abonnements/config
     controller: DfsAbonnements\Controller\Admin\AdminDfsAbonnementsConfigController::indexAction
     methods: [GET, POST]
+    defaults:
+        _legacy_controller: AdminDfsAbonnementsConfig
+        _legacy_link: AdminDfsAbonnementsConfig
