@@ -38,11 +38,12 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
         if (!$module) {
             $this->addFlash('error', 'Module DFS Abonnements introuvable.');
             return $this->render('@Modules/dfs_abonnements/views/templates/admin/abonnements.html.twig', [
-                'orderGrid'        => null,
-                'abonnementOrders' => [],
-                'statusIds'        => [],
-                'logs'             => [],
-                'mailSentCount'    => 0,
+                'orderGrid'         => null,
+                'abonnementOrders'  => [],
+                'uniqueEmailsCount' => 0,
+                'statusIds'         => [],
+                'logs'              => [],
+                'mailSentCount'     => 0,
             ]);
         }
 
@@ -79,9 +80,19 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
             $presentedGrid = null;
         }
 
+        $abonnementOrders = $module->getAbonnementOrders();
+        $uniqueEmails = [];
+        foreach ($abonnementOrders as $o) {
+            if (!empty($o['email'])) {
+                $uniqueEmails[$o['email']] = true;
+            }
+        }
+        $uniqueEmailsCount = count($uniqueEmails);
+
         return $this->render('@Modules/dfs_abonnements/views/templates/admin/abonnements.html.twig', [
             'orderGrid'        => $presentedGrid,
-            'abonnementOrders' => $module->getAbonnementOrders(),
+            'abonnementOrders' => $abonnementOrders,
+            'uniqueEmailsCount'=> $uniqueEmailsCount,
             'statusIds'        => $statusIds,
             'logs'             => $module->getLogs(30),
             'mailSentCount'    => $mailSentCount,
