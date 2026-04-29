@@ -209,6 +209,36 @@ class Dfs_Abonnements extends Module
     }
 
     // =========================================================
+    // DÉSACTIVATION / ACTIVATION
+    // =========================================================
+
+    public function disable($force_all = false): bool
+    {
+        foreach (['AdminDfsAbonnements', 'AdminDfsAbonnementsConfig'] as $className) {
+            $idTab = (int) Tab::getIdFromClassName($className);
+            if ($idTab) {
+                $tab = new Tab($idTab);
+                $tab->active = false;
+                $tab->update();
+            }
+        }
+        return parent::disable($force_all);
+    }
+
+    public function enable($force_all = false): bool
+    {
+        foreach (['AdminDfsAbonnements', 'AdminDfsAbonnementsConfig'] as $className) {
+            $idTab = (int) Tab::getIdFromClassName($className);
+            if ($idTab) {
+                $tab = new Tab($idTab);
+                $tab->active = true;
+                $tab->update();
+            }
+        }
+        return parent::enable($force_all);
+    }
+
+    // =========================================================
     // DÉSINSTALLATION
     // =========================================================
 
