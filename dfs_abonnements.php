@@ -13,22 +13,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-// Autoloader PSR-4 manuel (pas besoin de composer install sur le serveur)
-spl_autoload_register(function (string $class): void {
-    $prefix  = 'DfsAbonnements\\';
-    $baseDir = __DIR__ . '/src/';
-
-    if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
-        return;
-    }
-
-    $relativeClass = substr($class, strlen($prefix));
-    $file          = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
-    if (file_exists($file)) {
-        require_once $file;
-    }
-});
+// Chargement de l'autoloader PSR-4
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
 
 class Dfs_Abonnements extends Module
 {

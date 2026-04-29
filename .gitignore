@@ -1,5 +1,5 @@
 # Dépendances
-/vendor/
+
 *.lock
 
 # IDE
