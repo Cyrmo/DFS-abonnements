@@ -263,18 +263,52 @@ class Dfs_Abonnements extends Module
 
     private function uninstallOrderStates(): bool
     {
-        // On ne supprime PAS les états pour préserver l'historique des commandes existantes.
-        // On les désactive simplement pour qu'ils n'apparaissent plus dans la liste.
+        // POLITIQUE : ne jamais supprimer un état référencé par des commandes existantes.
+        // Si des commandes utilisent cet état (current_state OU historique),
+        // l'état est conservé intact pour ne pas créer d'incohérence dans les données.
+        // Seule l'association module_name est retirée.
+        // Si aucune commande ne l'utilise, l'état est marqué supprimé (soft delete PS).
         foreach ([self::CFG_STATUS_ABONNEMENT, self::CFG_STATUS_TERMINE] as $configKey) {
             $idState = (int) Configuration::get($configKey);
-            if ($idState) {
-                $state = new OrderState($idState);
-                if (Validate::isLoadedObject($state)) {
-                    $state->deleted = true;
-                    $state->update();
-                }
+            if (!$idState) {
+                continue;
+            }
+
+            $state = new OrderState($idState);
+            if (!Validate::isLoadedObject($state)) {
+                continue;
+            }
+
+            // Vérifier si des commandes ont cet état en cours
+            $usedByOrders = (int) Db::getInstance()->getValue(
+                'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'orders`
+                 WHERE `current_state` = ' . $idState
+            );
+
+            // Vérifier si des commandes ont cet état dans leur historique
+            $usedByHistory = (int) Db::getInstance()->getValue(
+                'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'order_history`
+                 WHERE `id_order_state` = ' . $idState
+            );
+
+            if ($usedByOrders > 0 || $usedByHistory > 0) {
+                // État référencé : on retire seulement l'association module
+                // sans toucher à l'état lui-même
+                $state->module_name = null;
+                $state->update();
+
+                PrestaShopLogger::addLog(
+                    'DFS Abonnements: État #' . $idState . ' conservé (référencé par '
+                    . ($usedByOrders + $usedByHistory) . ' commande(s)).',
+                    1, null, 'OrderState', $idState
+                );
+            } else {
+                // Aucune commande ne l'utilise : soft delete sans risque
+                $state->deleted = true;
+                $state->update();
             }
         }
+
         return true;
     }
 
@@ -317,9 +351,11 @@ class Dfs_Abonnements extends Module
 
     public function hookActionOrderGridQueryBuilderModifier(array $params): void
     {
-        // N'intervenir QUE sur la page Abonnements du module
+        // N'intervenir QUE sur la page Abonnements du module.
+        // La route est /sell/orders/abonnements — la page Commandes native est /sell/orders
+        // sans suffixe, donc ce strpos est parfaitement isolant.
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-        if (strpos($requestUri, '/abonnements') === false) {
+        if (strpos($requestUri, '/sell/orders/abonnements') === false) {
             return;
         }
 
@@ -432,19 +468,27 @@ class Dfs_Abonnements extends Module
         $dateTo         = date('Y-m-d H:i:s', strtotime("+{$validityMonths} months"));
         $code           = 'ABONNEMENT-' . $order->id . '-' . strtoupper(substr(md5(uniqid()), 0, 6));
 
-        $cartRule                   = new CartRule();
-        $cartRule->code             = $code;
-        $cartRule->id_customer      = (int) $order->id_customer;
-        $cartRule->date_from        = $dateFrom;
-        $cartRule->date_to          = $dateTo;
-        $cartRule->quantity         = 1;
-        $cartRule->quantity_per_user = 1;
-        $cartRule->reduction_amount = $amount;
-        $cartRule->reduction_tax    = true;
+        $cartRule                    = new CartRule();
+        $cartRule->code              = $code;
+        $cartRule->id_customer       = (int) $order->id_customer;
+        $cartRule->date_from         = $dateFrom;
+        $cartRule->date_to           = $dateTo;
+        $cartRule->quantity          = 1;   // 1 utilisation globale
+        $cartRule->quantity_per_user = 1;   // 1 utilisation par client
+        // Réduction fixe TTC (le montant affiché est inclusif de TVA)
+        $cartRule->reduction_amount  = $amount;
+        $cartRule->reduction_tax     = true; // montant TTC
         $cartRule->reduction_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
-        $cartRule->minimum_amount   = 0;
-        $cartRule->active           = true;
-        $cartRule->highlight        = true;
+        $cartRule->reduction_product = 0;   // applicable sur tout le panier
+        $cartRule->reduction_percent = 0;   // pas de réduction en %
+        $cartRule->free_shipping     = false;
+        $cartRule->minimum_amount    = 0;
+        $cartRule->minimum_amount_tax = false;
+        $cartRule->minimum_amount_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
+        $cartRule->minimum_amount_shipping = false;
+        $cartRule->active            = true;
+        $cartRule->highlight         = true;
+        $cartRule->partial_use       = false; // pas de réduction partielle
 
         foreach (Language::getLanguages(false) as $lang) {
             $cartRule->name[$lang['id_lang']] = 'Code abonnement - Commande ' . $order->reference;

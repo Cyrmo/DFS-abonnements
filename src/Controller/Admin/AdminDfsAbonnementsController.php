@@ -30,7 +30,7 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
     }
 
     #[AdminSecurity("is_granted('read', request.get('_legacy_controller'))")]
-    public function indexAction(Request $request): Response
+    public function indexAction(Request $request, OrderFilters $filters): Response
     {
         /** @var Dfs_Abonnements|null $module */
         $module = \Module::getInstanceByName('dfs_abonnements');
@@ -67,8 +67,10 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
             }
         }
 
-        // Construction de la grille native (avec filtre appliqué via hook dans le module)
-        $filters   = new OrderFilters(['filters' => []], $request);
+        // Construction de la grille native.
+        // Les $filters sont remplis par PS9 via le FiltersBuilderValueResolver (comme AdminOrdersController).
+        // Le hook hookActionOrderGridQueryBuilderModifier du module ajoute automatiquement
+        // la clause WHERE current_state IN (X, Y) — uniquement sur cette route.
         $orderGrid = $this->orderGridFactory->getGrid($filters);
 
         return $this->render('@Modules/dfs_abonnements/views/templates/admin/abonnements.html.twig', [
@@ -82,6 +84,7 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
             'layoutHeaderToolbarBtn' => [],
         ]);
     }
+
 
     private function handleSendPretMail(Dfs_Abonnements $module): int
     {
