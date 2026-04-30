@@ -369,14 +369,6 @@ class Dfs_Abonnements extends Module
 
     public function hookActionOrderGridQueryBuilderModifier(array $params): void
     {
-        // N'intervenir QUE sur la page Abonnements du module.
-        // La route est /sell/orders/abonnements — la page Commandes native est /sell/orders
-        // sans suffixe, donc ce strpos est parfaitement isolant.
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
-        if (strpos($requestUri, '/sell/orders/abonnements') === false) {
-            return;
-        }
-
         $idAbonnement = (int) Configuration::get(self::CFG_STATUS_ABONNEMENT);
         $idTermine    = (int) Configuration::get(self::CFG_STATUS_TERMINE);
 
@@ -390,8 +382,18 @@ class Dfs_Abonnements extends Module
 
         $statusIds = implode(',', [(int) $idAbonnement, (int) $idTermine]);
 
-        $searchQueryBuilder->andWhere('o.`current_state` IN (' . $statusIds . ')');
-        $countQueryBuilder->andWhere('o.`current_state` IN (' . $statusIds . ')');
+        // La route est /sell/orders/abonnements — la page Commandes native est /sell/orders sans suffixe
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        
+        if (strpos($requestUri, '/sell/orders/abonnements') !== false) {
+            // Sur la page "Abonnements", on NE MONTRE QUE ces statuts
+            $searchQueryBuilder->andWhere('o.`current_state` IN (' . $statusIds . ')');
+            $countQueryBuilder->andWhere('o.`current_state` IN (' . $statusIds . ')');
+        } else {
+            // Sur la page "Commandes" native (ou autre), on EXCLUT ces statuts
+            $searchQueryBuilder->andWhere('o.`current_state` NOT IN (' . $statusIds . ')');
+            $countQueryBuilder->andWhere('o.`current_state` NOT IN (' . $statusIds . ')');
+        }
     }
 
     // =========================================================
