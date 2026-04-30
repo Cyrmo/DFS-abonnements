@@ -556,10 +556,6 @@ class Dfs_Abonnements extends Module
 
     public function sendMailAbonnementPret(Order $order): bool
     {
-        // Anti-doublon par commande
-        if ($this->hasLog($order->id, 'pret_email_sent')) {
-            return false;
-        }
 
         $result = $this->sendModuleMail($order, 'dfs_abonnement_pret', 'Votre abonnement est prêt', []);
 

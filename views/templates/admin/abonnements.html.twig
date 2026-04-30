@@ -49,9 +49,8 @@
             <div class="col-lg-8">
                 <h4>📬 Envoyer le mail « Votre abonnement est prêt »</h4>
                 <p class="text-muted">
-                    Ce mail est envoyé manuellement à tous les clients dont la commande est actuellement
-                    en état <strong>Abonnement</strong>.
-                    Les commandes ayant déjà reçu ce mail sont automatiquement ignorées.
+                    Ce mail est envoyé manuellement aux clients dont la commande est actuellement en état <strong>Abonnement</strong>.
+                    Il peut être envoyé plusieurs fois si nécessaire, par exemple pour prévenir qu'une nouvelle sélection est prête, disponible en boutique ou expédiée.
                 </p>
 
                 {# Statistiques #}
@@ -71,7 +70,7 @@
 
                 {% if abonnementCount > 0 %}
                     <form method="post" action=""
-                          onsubmit="return confirm('Confirmer l\'envoi du mail « Abonnement prêt » à {{ uniqueEmails }} client(s) ?\n\nLes commandes ayant déjà reçu ce mail seront ignorées.')">
+                          onsubmit="return confirm('Confirmer l\'envoi du mail « Abonnement prêt » à {{ uniqueEmails }} client(s) ?\n\nCe mail sera envoyé à toutes les commandes en état Abonnement, même si elles l\'ont déjà reçu.')">
                         <input type="hidden" name="send_pret_mail" value="1">
                         <button type="submit" class="btn btn-primary">
                             <i class="material-icons">send</i>
