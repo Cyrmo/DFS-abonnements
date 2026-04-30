@@ -467,7 +467,7 @@ class Dfs_Abonnements extends Module
         $id12m = (int) Configuration::get(self::CFG_ID_PRODUCT_12M);
 
         foreach ($order->getProducts() as $product) {
-            $idProduct = (int) $product['id_product'];
+            $idProduct = (int) ($product['product_id'] ?? $product['id_product']);
             if ($idProduct === $id6m) {
                 return (float) Configuration::get(self::CFG_PROMO_6M);
             }
