@@ -121,7 +121,7 @@
                 <h4>📋 Journal des actions récentes</h4>
                 {% if logs|length > 0 %}
                 <div class="table-responsive">
-                    <table class="table table-striped table-sm">
+                    <table class="table table-striped table-sm" id="dfs-logs-table">
                         <thead class="table-dark">
                             <tr>
                                 <th>Date</th>
@@ -160,6 +160,56 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="dfs-logs-pagination" class="d-flex justify-content-between align-items-center mt-3">
+                    <span id="dfs-logs-info" class="text-muted small"></span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="dfs-logs-prev">Précédent</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="dfs-logs-next">Suivant</button>
+                    </div>
+                </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const table = document.getElementById('dfs-logs-table');
+                    if (!table) return;
+                    
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const itemsPerPage = 15;
+                    let currentPage = 1;
+                    const totalPages = Math.ceil(rows.length / itemsPerPage);
+                    
+                    const btnPrev = document.getElementById('dfs-logs-prev');
+                    const btnNext = document.getElementById('dfs-logs-next');
+                    const infoSpan = document.getElementById('dfs-logs-info');
+                    
+                    if (rows.length <= itemsPerPage) {
+                        document.getElementById('dfs-logs-pagination').style.display = 'none';
+                        return;
+                    }
+                    
+                    function renderPage(page) {
+                        currentPage = page;
+                        const start = (currentPage - 1) * itemsPerPage;
+                        const end = start + itemsPerPage;
+                        
+                        rows.forEach((row, index) => {
+                            row.style.display = (index >= start && index < end) ? '' : 'none';
+                        });
+                        
+                        btnPrev.disabled = currentPage === 1;
+                        btnNext.disabled = currentPage === totalPages;
+                        
+                        const actualEnd = Math.min(end, rows.length);
+                        infoSpan.textContent = `Affichage ${start + 1} à ${actualEnd} sur ${rows.length} entrées`;
+                    }
+                    
+                    btnPrev.addEventListener('click', () => { if (currentPage > 1) renderPage(currentPage - 1); });
+                    btnNext.addEventListener('click', () => { if (currentPage < totalPages) renderPage(currentPage + 1); });
+                    
+                    renderPage(1);
+                });
+                </script>
                 {% else %}
                     <p class="text-muted">Aucune action enregistrée pour le moment.</p>
                 {% endif %}

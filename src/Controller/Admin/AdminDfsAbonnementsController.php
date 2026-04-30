@@ -94,7 +94,7 @@ class AdminDfsAbonnementsController extends PrestaShopAdminController
             'abonnementOrders' => $abonnementOrders,
             'uniqueEmailsCount'=> $uniqueEmailsCount,
             'statusIds'        => $statusIds,
-            'logs'             => $module->getLogs(30),
+            'logs'             => $module->getLogs(500),
             'mailSentCount'    => $mailSentCount,
             'enableSidebar'    => true,
             'layoutTitle'      => 'Abonnements',
